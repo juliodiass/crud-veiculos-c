@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 typedef struct {
     char placa[8];
     char marca[30];
@@ -9,6 +10,7 @@ void exibirmenu();
 void exibirRelatorios();
 void selecionarmenu(int opcao);
 void cadastrarveiculo();
+int verificarplaca(char *placa);
 void cadastrarnoarquivo(Veiculos veiculo);
 int main() {
     int opcao = 0;
@@ -63,6 +65,11 @@ void cadastrarveiculo(){
     Veiculos veiculo;
     printf("Digite a placa do veiculo: ");
     scanf(" %7[^\n]", veiculo.placa);
+    int jacadastrado = verificarplaca(veiculo.placa);
+    if(jacadastrado == 1){
+        printf("Placa ja cadastrada.\n");
+        return;
+    }
     printf("Digite a marca do veiculo: ");
     scanf(" %29[^\n]", veiculo.marca);
     printf("Digite o modelo do veiculo: ");
@@ -71,13 +78,28 @@ void cadastrarveiculo(){
     scanf("%d", &veiculo.ano);
     cadastrarnoarquivo(veiculo);
 }
+int verificarplaca(char *placa){
+    Veiculos veiculo;
+    FILE *arquivo = fopen("veiculos.bin", "rb");
+    if(arquivo == NULL){
+        return 0;
+    }
+    while(fread(&veiculo, sizeof(Veiculos), 1, arquivo) == 1){
+        if(strcmp(veiculo.placa, placa) == 0){
+            fclose(arquivo);
+            return 1;
+        }
+    }
+    fclose(arquivo);
+    return 0;
+}
 void cadastrarnoarquivo(Veiculos veiculo) {
     FILE *arquivo = fopen("veiculos.bin", "ab");
-    if(arquivo == NULL) {
+    if(arquivo == NULL){
         printf("Erro ao abrir o arquivo.\n");
         return;
     }
-    if(fwrite(&veiculo, sizeof(Veiculos), 1, arquivo) == 1) {
+    if(fwrite(&veiculo, sizeof(Veiculos), 1, arquivo) == 1){
         printf("Veiculo cadastrado com sucesso!\n");
     } 
     else{
