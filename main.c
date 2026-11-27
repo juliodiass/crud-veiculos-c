@@ -8,6 +8,8 @@ typedef struct {
 void exibirmenu();
 void exibirRelatorios();
 void selecionarmenu(int opcao);
+void cadastrarveiculo();
+void cadastrarnoarquivo(Veiculos veiculo);
 int main() {
     int opcao = 0;
     do{
@@ -36,6 +38,7 @@ void selecionarmenu(int opcao){
     switch(opcao){
         case 1:
             printf("\n===== Cadastro de veiculos =====\n");
+            cadastrarveiculo();
             break;
         case 2:
             printf("\n===== Listar veiculos =====\n");
@@ -55,4 +58,30 @@ void selecionarmenu(int opcao){
         default:
             printf("Opcao invalida. Tente novamente.\n");
     }
+}
+void cadastrarveiculo(){
+    Veiculos veiculo;
+    printf("Digite a placa do veiculo: ");
+    scanf(" %7[^\n]", veiculo.placa);
+    printf("Digite a marca do veiculo: ");
+    scanf(" %29[^\n]", veiculo.marca);
+    printf("Digite o modelo do veiculo: ");
+    scanf(" %29[^\n]", veiculo.modelo);
+    printf("Digite o ano de fabricacao do veiculo: ");
+    scanf("%d", &veiculo.ano);
+    cadastrarnoarquivo(veiculo);
+}
+void cadastrarnoarquivo(Veiculos veiculo) {
+    FILE *arquivo = fopen("veiculos.bin", "ab");
+    if(arquivo == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return;
+    }
+    if(fwrite(&veiculo, sizeof(Veiculos), 1, arquivo) == 1) {
+        printf("Veiculo cadastrado com sucesso!\n");
+    } 
+    else{
+        printf("Erro ao gravar veiculo.\n");
+    }
+    fclose(arquivo);
 }
